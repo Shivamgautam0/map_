@@ -1,0 +1,89 @@
+<!-- templates/map.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Map</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        #map {
+            flex: 2;
+            height: 100%;
+        }
+        .sidebar {
+            flex: 1;
+            padding: 20px;
+            background-color: #f8f9fa;
+            overflow-y: auto;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            margin-top: 0;
+        }
+        .stats-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .stat-item {
+            margin-bottom: 10px;
+        }
+        .stat-value {
+            font-weight: bold;
+        }
+        .category-distribution {
+            margin-top: 20px;
+        }
+        .category-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            margin-bottom: 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="map"></div>
+        <div class="sidebar">
+            <h1>Map Data</h1>
+            
+            <div class="stats-container">
+                <h2>Statistics</h2>
+                <div id="statistics-container">
+                    <p>Loading statistics...</p>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <h2>Latest Locations</h2>
+                <div id="latest-locations">
+                    <p>Loading latest locations...</p>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <h2>Category Distribution</h2>
+                <div id="category-distribution">
+                    <p>Loading categories...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="/static/js/map.js"></script>
+</body>
+</html>
