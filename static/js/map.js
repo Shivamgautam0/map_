@@ -1,41 +1,6 @@
-// static/js/map.js
+// static/js/data.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize map
-    const map = L.map('map').setView([0, 0], 2);
-    
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // Load locations as GeoJSON
-    fetch('/api/geojson/')
-        .then(response => response.json())
-        .then(data => {
-            // Add GeoJSON to map
-            L.geoJSON(data, {
-                pointToLayer: function(feature, latlng) {
-                    return L.marker(latlng);
-                },
-                onEachFeature: function(feature, layer) {
-                    const properties = feature.properties;
-                    layer.bindPopup(`
-                        <h3>${properties.name}</h3>
-                        <p><strong>Category:</strong> ${properties.category}</p>
-                        <p>${properties.description || 'No description available.'}</p>
-                    `);
-                }
-            }).addTo(map);
-
-            // If we have locations, fit the map to show all of them
-            if (data.features.length > 0) {
-                const bounds = L.geoJSON(data).getBounds();
-                map.fitBounds(bounds);
-            }
-        })
-        .catch(error => console.error('Error loading GeoJSON:', error));
-
     // Load statistics
     fetch('/api/statistics/')
         .then(response => response.json())
@@ -60,9 +25,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Display latest locations
             const latestLocationsHtml = data.latest_locations.map(location => `
-                <div class="stat-item">
-                    <div>${location.name}</div>
-                    <div class="stat-value">${location.category_name}</div>
+                <div class="location-item">
+                    <div class="location-header">
+                        <span class="location-name">${location.name}</span>
+                        <span class="location-category">${location.category_name}</span>
+                    </div>
+                    <div class="location-description">${location.description || 'No description available.'}</div>
                 </div>
             `).join('');
             
@@ -70,17 +38,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 latestLocationsHtml || '<p>No locations added yet.</p>';
 
             // Display category distribution
-            const maxCount = Math.max(...data.category_distribution.map(item => item.count));
+            const maxCount = Math.max(...data.category_distribution.map(item => item.count), 1);
             
             const categoryDistributionHtml = data.category_distribution.map(category => `
                 <div class="stat-item">
                     <div>${category.name} (${category.count})</div>
-                    <div class="category-bar" style="width: ${(category.count / maxCount * 100)}%"></div>
+                    <div class="stat-value">${Math.round(category.count / data.total_locations * 100)}%</div>
                 </div>
+                <div class="category-bar" style="width: ${(category.count / maxCount * 100)}%"></div>
             `).join('');
             
             document.getElementById('category-distribution').innerHTML = 
                 categoryDistributionHtml || '<p>No categories available.</p>';
         })
         .catch(error => console.error('Error loading statistics:', error));
+        
+    // Load all locations
+    fetch('/api/locations/')
+        .then(response => response.json())
+        .then(data => {
+            const locationsHtml = data.map(location => `
+                <div class="location-item">
+                    <div class="location-header">
+                        <span class="location-name">${location.name}</span>
+                        <span class="location-category">${location.category_name}</span>
+                    </div>
+                    <div class="stat-item">
+                        <div>Coordinates:</div>
+                        <div>${location.latitude}, ${location.longitude}</div>
+                    </div>
+                    <div class="location-description">${location.description || 'No description available.'}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('locations-list').innerHTML = 
+                locationsHtml || '<p>No locations available.</p>';
+        })
+        .catch(error => console.error('Error loading locations:', error));
 });

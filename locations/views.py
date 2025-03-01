@@ -65,6 +65,6 @@ class StatisticsView(views.APIView):
             'category_distribution': category_distribution
         })
 
-def map_view(request):
-    """Renders the map page"""
+def location_view(request):
+    """Renders the location data page"""
     return render(request, 'map.html')
